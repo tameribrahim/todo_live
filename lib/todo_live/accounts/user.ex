@@ -31,6 +31,7 @@ defmodule TodoLive.Accounts.User do
   def registration_changeset(user, attrs, opts \\ []) do
     user
     |> cast(attrs, [:email, :password])
+    |> validate_confirmation(:password, message: "Passwords don't match")
     |> validate_email()
     |> validate_password(opts)
   end

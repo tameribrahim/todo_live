@@ -42,7 +42,11 @@ defmodule TodoLiveWeb.UserRegistrationControllerTest do
     test "render errors for invalid data", %{conn: conn} do
       conn =
         post(conn, Routes.user_registration_path(conn, :create), %{
-          "user" => %{"email" => "with spaces", "password" => "too short"}
+          "user" => %{
+            "email" => "with spaces",
+            "password" => "too short",
+            "password_confirmation" => "does not match"
+          }
         })
 
       response = html_response(conn, 200)

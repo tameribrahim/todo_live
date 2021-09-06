@@ -59,11 +59,17 @@ defmodule TodoLive.AccountsTest do
     end
 
     test "validates email and password when given" do
-      {:error, changeset} = Accounts.register_user(%{email: "not valid", password: "not valid"})
+      {:error, changeset} =
+        Accounts.register_user(%{
+          email: "not valid",
+          password: "not valid",
+          password_confirmation: "not valid 2"
+        })
 
       assert %{
                email: ["must have the @ sign and no spaces"],
-               password: ["should be at least 12 character(s)"]
+               password: ["should be at least 12 character(s)"],
+               password_confirmation: ["Passwords don't match"]
              } = errors_on(changeset)
     end
 
