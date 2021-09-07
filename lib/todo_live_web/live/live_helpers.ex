@@ -23,7 +23,7 @@ defmodule TodoLiveWeb.LiveHelpers do
     live_component(TodoLiveWeb.ModalComponent, modal_opts)
   end
 
-  def assign_defaults(%{"current_user" => current_user} = _session, socket) do
+  def assign_defaults(socket, %{"current_user" => current_user} = _session) do
     socket =
       Phoenix.LiveView.assign_new(socket, :current_user, fn ->
         current_user

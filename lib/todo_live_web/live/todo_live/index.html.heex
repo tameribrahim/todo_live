@@ -1,6 +1,5 @@
-<h1>Listing Todos</h1>
-
-<%= if @live_action in [:new, :edit] do %>
+<span><%= live_patch "New Todo", to: Routes.todo_index_path(@socket, :new) %></span>
+<%= if @live_action in [:edit, :new] do %>
   <%= live_modal TodoLiveWeb.TodoLive.FormComponent,
     id: @todo.id || :new,
     title: @page_title,
@@ -10,31 +9,28 @@
     return_to: Routes.todo_index_path(@socket, :index) %>
 <% end %>
 
-<table>
-  <thead>
-    <tr>
-      <th>Title</th>
-      <th>Due at</th>
-      <th>By</th>
-
-      <th></th>
-    </tr>
-  </thead>
-  <tbody id="todos">
+<div class="m-4 h-100 w-full flex flex-col items-center justify-center font-sans">
+  <h1>Listing Todos</h1>
+  <div id="todos" phx-update="prepend" class="bg-white rounded shadow p-6 m-4 w-full lg:w-3/4">
     <%= for todo <- @todos do %>
-      <tr id={"todo-#{todo.id}"} class={"#{todo.done_at && "todo-done"}"}>
-        <td><%= todo.title %></td>
-        <td><%= todo.due_at %></td>
-        <td><%= todo.user.first_name <> " " <> todo.user.last_name %></td>
-        <td>
-          <span><%= link todo.done_at && "Open again" || "Done", to: "#", phx_click: "toggle", phx_value_id: todo.id %></span>
+      <div id={"todo-#{todo.id}"} class={"flex mb-4 items-center"}>
+        <div class="flex-1">
+          <div class={"#{todo.done_at && "todo-done"}"}><%= todo.title %></div>
+          <div class="text-sm">By <%= todo.user.first_name <> " " <> todo.user.last_name %></div>
+          <%= if todo.due_at do %>
+          <div class="text-sm">Due at:<%= todo.due_at %></div>
+          <% end %>
+        </div>
+        <div class="m-4">
+          <span class="mr-3"><%= link todo.done_at && "Open again" || "Done", to: "#", phx_click: "toggle", phx_value_id: todo.id %></span>
           <%= unless todo.done_at do %>
             <span><%= live_patch "Edit", to: Routes.todo_index_path(@socket, :edit, todo) %></span>
           <% end %>
-        </td>
-      </tr>
+        </div>
+      </div>
+      <div class="my-2 flex flex-row justify-center">
+        <div class="w-full bg-gray-200 mt-3" style="height: 1px"></div>
+      </div>
     <% end %>
-  </tbody>
-</table>
-
-<span><%= live_patch "New Todo", to: Routes.todo_index_path(@socket, :new) %></span>
+  </div>
+</div>

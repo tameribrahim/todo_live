@@ -1,10 +1,4 @@
-<div>
-  <div class="text-center w-full font-bold text-3xl text-gray-600 p-4">
-    <%= @title %>
-  </div>
-  <div
-      class="w-full bg-gray-200 my-3" style="height: 1px"
-  ></div>
+<div class="m-4 h-100 w-full flex flex-col items-center justify-center font-sans">
   <.form
     let={f}
     for={@changeset}
@@ -14,15 +8,17 @@
     phx-submit="save">
 
     <div class="flex flex-col gap-4 px-0 py-4">
-      <div>
-        <%= label f, :title %>
-        <%= text_input f, :title, class: "py-2 pl-10 border border-gray-200 w-full" %>
-        <%= error_tag f, :title %>
-      </div>
-      <div>
-        <%= label f, :due_at %>
-        <%= text_input f, :due_at, type: "date", class: "py-2 pl-10 border border-gray-200 w-full" %>
-        <%= error_tag f, :due_at %>
+      <div class="flex">
+        <div>
+          <%= label f, :title %>
+          <%= text_input f, :title, placeholder: "What you are going to do?", class: "py-2 pl-10 border border-gray-200 w-full" %>
+          <%= error_tag f, :title %>
+        </div>
+        <div>
+          <%= label f, :due_at %>
+          <%= text_input f, :due_at, type: "date", class: "py-2 pl-10 border border-gray-200 w-full" %>
+          <%= error_tag f, :due_at %>
+        </div>
       </div>
       <div class="w-full flex flex-row gap-2">
         <button
@@ -38,5 +34,5 @@
       </div>
     </div>
   </.form>
-
+  <div class="w-full bg-gray-200 my-3" style="height: 1px"></div>
 </div>

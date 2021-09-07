@@ -18,7 +18,7 @@ defmodule TodoLive.Todos do
 
   """
   def list_todos do
-    Repo.all(from t in Todo, order_by: t.inserted_at, preload: [:user])
+    Repo.all(from t in Todo, order_by: [desc: t.inserted_at], preload: [:user])
   end
 
   @doc """
@@ -53,6 +53,8 @@ defmodule TodoLive.Todos do
     %Todo{}
     |> Todo.changeset(attrs)
     |> Repo.insert()
+    |> load_user
+    |> broadcast(:todo_created)
   end
 
   @doc """
@@ -71,6 +73,8 @@ defmodule TodoLive.Todos do
     todo
     |> Todo.changeset(attrs)
     |> Repo.update()
+    |> load_user
+    |> broadcast(:todo_updated)
   end
 
   @doc """
@@ -102,10 +106,38 @@ defmodule TodoLive.Todos do
     Todo.changeset(todo, attrs)
   end
 
-  def toggle_todo(todo) do
+  def toggle_todo(id) do
+    todo = get_todo!(id)
     new_done_at = if todo.done_at, do: nil, else: DateTime.utc_now()
 
-    from(t in Todo, where: t.id == ^todo.id, select: t)
-    |> Repo.update_all(set: [done_at: new_done_at])
+    todo = change_todo(todo, %{done_at: new_done_at})
+
+    todo
+    |> Repo.update()
+    |> load_user
+    |> broadcast(:todo_updated)
+  end
+
+  def load_user(todo) do
+    case todo do
+      {:ok, todo} -> {:ok, Repo.preload(todo, :user)}
+      error -> error
+    end
+  end
+
+  def subscribe() do
+    Phoenix.PubSub.subscribe(TodoLive.PubSub, "todos")
+  end
+
+  def broadcast({:error, _reason} = error, _event), do: error
+
+  def broadcast({:ok, todo}, event) do
+    Phoenix.PubSub.broadcast(TodoLive.PubSub, "todos", {event, todo})
+    {:ok, todo}
+  end
+
+  def broadcast({1, todo}, event) do
+    Phoenix.PubSub.broadcast(TodoLive.PubSub, "todos", {event, todo})
+    {:ok, todo}
   end
 end

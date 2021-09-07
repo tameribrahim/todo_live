@@ -6,8 +6,14 @@ defmodule TodoLiveWeb.TodoLive.Index do
 
   @impl true
   def mount(_params, session, socket) do
-    socket = assign_defaults(session, socket)
-    {:ok, assign(socket, :todos, list_todos())}
+    if connected?(socket), do: Todos.subscribe()
+
+    socket =
+      socket
+      |> assign_defaults(session)
+      |> assign(:todos, list_todos())
+
+    {:ok, socket, temporary_assigns: [todos: []]}
   end
 
   @impl true
@@ -30,14 +36,23 @@ defmodule TodoLiveWeb.TodoLive.Index do
   defp apply_action(socket, :index, _params) do
     socket
     |> assign(:page_title, "Listing Todos")
-    |> assign(:todo, nil)
+    |> assign(:todo, %Todo{})
   end
 
   @impl true
   def handle_event("toggle", %{"id" => id}, socket) do
-    todo = Todos.get_todo!(id)
-    {1, _} = Todos.toggle_todo(todo)
+    {:ok, todo} = Todos.toggle_todo(id)
     {:noreply, assign(socket, :todos, list_todos())}
+  end
+
+  @impl true
+  def handle_info({:todo_created, todo}, socket) do
+    {:noreply, update(socket, :todos, fn todos -> [todo | todos] end)}
+  end
+
+  @impl true
+  def handle_info({:todo_updated, todo}, socket) do
+    {:noreply, update(socket, :todos, fn todos -> [todo | todos] end)}
   end
 
   defp list_todos do

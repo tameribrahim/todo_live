@@ -18,5 +18,6 @@ defmodule TodoLive.Todos.Todo do
     todo
     |> cast(attrs, [:title, :due_at, :done_at, :user_id, :channels])
     |> validate_required([:title, :user_id])
+    |> validate_length(:title, min: 4, max: 256)
   end
 end
