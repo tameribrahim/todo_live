@@ -18,7 +18,7 @@ defmodule TodoLive.Todos do
 
   """
   def list_todos do
-    Repo.all(Todo)
+    Repo.all(from t in Todo, order_by: t.inserted_at, preload: [:user])
   end
 
   @doc """
@@ -100,5 +100,12 @@ defmodule TodoLive.Todos do
   """
   def change_todo(%Todo{} = todo, attrs \\ %{}) do
     Todo.changeset(todo, attrs)
+  end
+
+  def toggle_todo(todo) do
+    new_done_at = if todo.done_at, do: nil, else: DateTime.utc_now()
+
+    from(t in Todo, where: t.id == ^todo.id, select: t)
+    |> Repo.update_all(set: [done_at: new_done_at])
   end
 end

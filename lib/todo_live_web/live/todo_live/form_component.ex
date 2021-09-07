@@ -41,7 +41,10 @@ defmodule TodoLiveWeb.TodoLive.FormComponent do
   end
 
   defp save_todo(socket, :new, todo_params) do
-    case Todos.create_todo(todo_params) do
+    %{current_user: current_user} = socket.assigns
+    todo_params_with_user = Map.put_new(todo_params, "user_id", current_user.id)
+
+    case Todos.create_todo(todo_params_with_user) do
       {:ok, _todo} ->
         {:noreply,
          socket

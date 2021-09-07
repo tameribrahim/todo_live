@@ -5,7 +5,8 @@ defmodule TodoLiveWeb.TodoLive.Index do
   alias TodoLive.Todos.Todo
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
+    socket = assign_defaults(session, socket)
     {:ok, assign(socket, :todos, list_todos())}
   end
 
@@ -33,10 +34,9 @@ defmodule TodoLiveWeb.TodoLive.Index do
   end
 
   @impl true
-  def handle_event("delete", %{"id" => id}, socket) do
+  def handle_event("toggle", %{"id" => id}, socket) do
     todo = Todos.get_todo!(id)
-    {:ok, _} = Todos.delete_todo(todo)
-
+    {1, _} = Todos.toggle_todo(todo)
     {:noreply, assign(socket, :todos, list_todos())}
   end
 

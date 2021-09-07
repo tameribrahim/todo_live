@@ -1,6 +1,8 @@
 defmodule TodoLiveWeb.LiveHelpers do
   import Phoenix.LiveView.Helpers
 
+  alias TodoLive.Accounts
+
   @doc """
   Renders a component inside the `TodoLiveWeb.ModalComponent` component.
 
@@ -19,5 +21,18 @@ defmodule TodoLiveWeb.LiveHelpers do
     path = Keyword.fetch!(opts, :return_to)
     modal_opts = [id: :modal, return_to: path, component: component, opts: opts]
     live_component(TodoLiveWeb.ModalComponent, modal_opts)
+  end
+
+  def assign_defaults(%{"current_user" => current_user} = _session, socket) do
+    socket =
+      Phoenix.LiveView.assign_new(socket, :current_user, fn ->
+        current_user
+      end)
+
+    if socket.assigns.current_user.id do
+      socket
+    else
+      Phoenix.LiveView.redirect(socket, to: "/login")
+    end
   end
 end
