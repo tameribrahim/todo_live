@@ -107,20 +107,32 @@ defmodule TodoLive.Todos do
   end
 
   def toggle_todo(id) do
-    todo = get_todo!(id)
-    new_done_at = if todo.done_at, do: nil, else: DateTime.utc_now()
+    today = Date.utc_today()
 
-    todo = change_todo(todo, %{done_at: new_done_at})
-
-    todo
-    |> Repo.update()
-    |> load_user
+    from(t in Todo,
+      where: t.id == ^id,
+      select: t,
+      update: [
+        set: [
+          done_at:
+            fragment(
+              "(CASE WHEN ? IS NULL THEN ? ELSE ? END)",
+              t.done_at,
+              type(^today, :date),
+              nil
+            )
+        ]
+      ]
+    )
+    |> Repo.update_all([])
+    |> load_user()
     |> broadcast(:todo_updated)
   end
 
-  def load_user(todo) do
-    case todo do
+  def load_user(updated) do
+    case updated do
       {:ok, todo} -> {:ok, Repo.preload(todo, :user)}
+      {1, [todo]} -> {:ok, Repo.preload(todo, :user)}
       error -> error
     end
   end
