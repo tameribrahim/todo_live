@@ -42,7 +42,7 @@ defmodule TodoLiveWeb.TodoLive.Index do
   @impl true
   def handle_event("toggle", %{"id" => id}, socket) do
     {:ok, todo} = Todos.toggle_todo(id)
-    {:noreply, assign(socket, :todos, list_todos())}
+    {:noreply, update(socket, :todos, fn todos -> [todo | todos] end)}
   end
 
   @impl true
