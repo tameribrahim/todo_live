@@ -13,20 +13,35 @@
   <h1>Listing Todos</h1>
   <div id="todos" phx-update="prepend" class="bg-white rounded shadow p-6 m-4 w-full lg:w-3/4">
     <%= for todo <- @todos do %>
-      <div id={"todo-#{todo.id}"} class={"flex mb-4 items-center"}>
+      <% status = cond do
+          todo.done_at -> ""
+          todo.due_at && todo.due_at < Date.utc_today -> "alert"
+          todo.due_at && todo.due_at <= Date.utc_today |> Date.add(3) -> "warning"
+          true -> ""
+        end %>
+      <div id={"todo-#{todo.id}"} class={"flex mb-4 items-center p-2 rounded-lg border todo-#{status}"}>
         <div class="flex-1">
           <div class={"#{todo.done_at && "todo-done"}"}><%= todo.title %></div>
-          <div class="text-sm">By <%= todo.user.first_name <> " " <> todo.user.last_name %></div>
+          <div class="text-sm">
+            By
+            <%= if (@current_user.id == todo.user.id) do %>
+              Me
+            <% else  %>
+              <%= todo.user.first_name <> " " <> todo.user.last_name %>
+            <% end %>
+          </div>
           <%= if todo.due_at do %>
           <div class="text-sm">Due at:<%= todo.due_at %></div>
           <% end %>
         </div>
-        <div class="m-4">
-          <span class="mr-3"><%= link todo.done_at && "Open again" || "Done", to: "#", phx_click: "toggle", phx_value_id: todo.id %></span>
-          <%= unless todo.done_at do %>
-            <span><%= live_patch "Edit", to: Routes.todo_index_path(@socket, :edit, todo) %></span>
-          <% end %>
-        </div>
+        <%= if (@current_user.id == todo.user.id) do %>
+          <div class="m-4">
+            <span class="mr-3"><%= link todo.done_at && "Open again" || "Done", to: "#", phx_click: "toggle", phx_value_id: todo.id %></span>
+            <%= unless todo.done_at do %>
+              <span><%= live_patch "Edit", to: Routes.todo_index_path(@socket, :edit, todo) %></span>
+            <% end %>
+          </div>
+        <% end %>
         <div class="my-2 flex flex-row justify-center">
           <div class="w-full bg-gray-200 mt-3" style="height: 1px"></div>
         </div>

@@ -13,6 +13,12 @@
 .todo-done {
   @apply line-through
 }
+.todo-warning {
+  @apply border-yellow-400 bg-yellow-300 text-yellow-900
+}
+.todo-alert {
+  @apply border-red-400 bg-red-300 text-red-900
+}
 /* Alerts and form errors used by phx.new */
 .alert {
   padding: 15px;
