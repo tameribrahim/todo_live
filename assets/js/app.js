@@ -34,6 +34,22 @@ Alpine.start();
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 // let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
 let hooks = {};
+hooks.chatInput = {
+  mounted(){
+    this.handleEvent("clear_input", () => {
+      this.el.value = ""
+    })
+  }
+}
+hooks.chatMessages = {
+  mounted(){
+    this.el.scrollTop = this.el.scrollHeight;
+  },
+  updated(){
+    this.el.scrollTop = this.el.scrollHeight
+  }
+}
+
 let liveSocket = new LiveSocket("/live", Socket, {
   params: { _csrf_token: csrfToken },
   hooks: hooks,

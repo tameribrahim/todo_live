@@ -1,36 +1,40 @@
-<h1>Room: <%= @room.name %></h1>
+<div class="m-4 h-100 w-full flex flex-col items-center justify-center font-sans">
+  <h1>Room: <%= @room.name %></h1>
+  <div id="messages" class=" bg-white rounded shadow p-6 m-4 w-full lg:w-3/4">
+    <div id="chat-messages" class="room-messages" phx-hook="chatMessages">
+      <%= for message <- @messages do %>
+        <div id={"message-#{message.id}"} class={"flex mb-4 items-center p-2 rounded-lg border "}>
+          <div class="flex-1">
+            <div>
+              <%= if (@current_user.id == message.user.id), do: "Me", else: message.user.first_name %>:
+              <%= message.body %>
+            </div>
+          </div>
 
-<%= if @live_action in [:edit] do %>
-  <%= live_modal TodoLiveWeb.RoomLive.FormComponent,
-    id: @room.id,
-    title: @page_title,
-    action: @live_action,
-    room: @room,
-    return_to: Routes.room_show_path(@socket, :show, @room) %>
-<% end %>
-<div id="messages">
-  <%= for message <- @messages do %>
-    <div>
-      <%= if (@current_user.id == message.user.id), do: "Me", else: message.user.first_name %>:
-      <%= message.body %>
+          <div class="my-2 flex flex-row justify-center">
+            <div class="w-full bg-gray-200 mt-3" style="height: 1px"></div>
+          </div>
+        </div>
+
+      <% end %>
     </div>
-  <% end %>
-</div>
-<.form
-  let={f}
-  for={@changeset}
-  id="room-form"
-  phx-change="typing"
-  phx-submit="save">
+    <div class="mt-4">
+      <.form
+        let={f}
+        for={@changeset}
+        id="room-form"
+        phx-change="typing"
+        phx-submit="save">
 
-  <%= text_input f, :body %>
-  <%= hidden_input :message, :user_id, value: @current_user.id  %>
-  <%= hidden_input :message, :room_id, value: @room.id  %>
-  <%= error_tag f, :body %>
+        <%= text_input f, :body, "phx-hook": "chatInput" %>
+        <%= error_tag f, :body %>
 
-  <div>
-    <%= submit "Send", phx_disable_with: "Sending..." %>
+        <div>
+          <%= submit "Send", phx_disable_with: "Sending..." %>
+        </div>
+      </.form>
+    </div>
   </div>
-</.form>
+  <span><%= live_redirect "Back", to: Routes.room_index_path(@socket, :index) %></span>
+</div>
 
-<span><%= live_redirect "Back", to: Routes.room_index_path(@socket, :index) %></span>

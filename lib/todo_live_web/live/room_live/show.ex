@@ -10,7 +10,7 @@ defmodule TodoLiveWeb.RoomLive.Show do
 
       # Presence.track(
       #   self(),
-      #   @hall_presence,
+      #   @ room_presence,
       #   current_user.id,
       #   %{
       #     first_name: current_user.first_name,
@@ -51,8 +51,7 @@ defmodule TodoLiveWeb.RoomLive.Show do
 
     case Chats.create_message(full_params) do
       {:ok, _message} ->
-        {:noreply,
-         update(socket, :changeset, fn _changset -> Chats.change_message(%Chats.Message{}) end)}
+        {:noreply, push_event(socket, :clear_input, %{})}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}

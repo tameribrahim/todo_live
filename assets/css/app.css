@@ -19,6 +19,10 @@
 .todo-alert {
   @apply border-red-400 bg-red-300 text-red-900
 }
+.room-messages {
+  height: 350px;
+  overflow: scroll;
+}
 /* Alerts and form errors used by phx.new */
 .alert {
   padding: 15px;
