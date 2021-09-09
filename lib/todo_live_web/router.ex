@@ -78,10 +78,17 @@ defmodule TodoLiveWeb.Router do
     put "/users/settings", UserSettingsController, :update
     get "/users/settings/confirm_email/:token", UserSettingsController, :confirm_email
 
+    live "/lobby", LobbyLive.Chat, :chat
+
+    live "/rooms", RoomLive.Index, :index
+    live "/rooms/new", RoomLive.Index, :new
+    live "/rooms/:id/edit", RoomLive.Index, :edit
+    live "/rooms/:id", RoomLive.Show, :show
+    live "/rooms/:id/show/edit", RoomLive.Show, :edit
+
     live "/todos", TodoLive.Index, :index
     live "/todos/new", TodoLive.Index, :new
     live "/todos/:id/edit", TodoLive.Index, :edit
-
     live "/todos/:id", TodoLive.Show, :show
     live "/todos/:id/show/edit", TodoLive.Show, :edit
   end

@@ -1,0 +1,36 @@
+<h1>Room: <%= @room.name %></h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal TodoLiveWeb.RoomLive.FormComponent,
+    id: @room.id,
+    title: @page_title,
+    action: @live_action,
+    room: @room,
+    return_to: Routes.room_show_path(@socket, :show, @room) %>
+<% end %>
+<div id="messages">
+  <%= for message <- @messages do %>
+    <div>
+      <%= if (@current_user.id == message.user.id), do: "Me", else: message.user.first_name %>:
+      <%= message.body %>
+    </div>
+  <% end %>
+</div>
+<.form
+  let={f}
+  for={@changeset}
+  id="room-form"
+  phx-change="typing"
+  phx-submit="save">
+
+  <%= text_input f, :body %>
+  <%= hidden_input :message, :user_id, value: @current_user.id  %>
+  <%= hidden_input :message, :room_id, value: @room.id  %>
+  <%= error_tag f, :body %>
+
+  <div>
+    <%= submit "Send", phx_disable_with: "Sending..." %>
+  </div>
+</.form>
+
+<span><%= live_redirect "Back", to: Routes.room_index_path(@socket, :index) %></span>

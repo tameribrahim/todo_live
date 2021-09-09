@@ -23,6 +23,10 @@
                 to: Routes.todo_index_path(@conn, :index),
                 class: "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
             %>
+            <%= link "Rooms",
+                to: Routes.room_index_path(@conn, :index),
+                class: "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
+            %>
             <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
                 <%= link "LiveDashboard",
                     to: Routes.live_dashboard_path(@conn, :home),

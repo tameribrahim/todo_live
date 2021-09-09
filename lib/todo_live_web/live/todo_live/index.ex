@@ -5,13 +5,15 @@ defmodule TodoLiveWeb.TodoLive.Index do
   alias TodoLive.Todos.Todo
 
   @impl true
-  def mount(_params, session, socket) do
-    if connected?(socket), do: Todos.subscribe()
+  def mount(_params, %{"current_user" => current_user} = _session, socket) do
+    if connected?(socket) do
+      Todos.subscribe()
+    end
 
     socket =
       socket
-      |> assign_defaults(session)
       |> assign(:todos, list_todos())
+      |> assign(:current_user, current_user)
 
     {:ok, socket, temporary_assigns: [todos: []]}
   end

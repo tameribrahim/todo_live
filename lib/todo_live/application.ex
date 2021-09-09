@@ -15,7 +15,9 @@ defmodule TodoLive.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: TodoLive.PubSub},
       # Start the Endpoint (http/https)
-      TodoLiveWeb.Endpoint
+      TodoLiveWeb.Endpoint,
+      # Add Presence
+      TodoLiveWeb.Presence
       # Start a worker by calling: TodoLive.Worker.start_link(arg)
       # {TodoLive.Worker, arg}
     ]

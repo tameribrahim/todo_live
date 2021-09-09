@@ -1,0 +1,43 @@
+<%= if @live_action in [:new, :edit] do %>
+  <%= live_modal TodoLiveWeb.RoomLive.FormComponent,
+    id: @room.id || :new,
+    title: @page_title,
+    action: @live_action,
+    current_user: @current_user,
+    room: @room,
+    return_to: Routes.room_index_path(@socket, :index) %>
+<% end %>
+
+<div class="m-4 h-100 w-full flex flex-col items-center justify-center font-sans">
+  <h1>Rooms</h1>
+  <div id="rooms" phx-update="prepend" class="bg-white rounded shadow p-6 m-4 w-full lg:w-3/4">
+    <%= for room <- @rooms do %>
+      <div id={"room-#{room.id}"} class={"flex mb-4 items-center p-2 rounded-lg border "}>
+        <div class="flex-1">
+          <div><%= room.name %></div>
+          <div class="text-sm">
+            By
+            <%= if (@current_user.id == room.creator.id) do %>
+              Me
+            <% else  %>
+              <%= room.creator.first_name <> " " <> room.creator.last_name %>
+            <% end %>
+          </div>
+        </div>
+        <div class="m-4">
+          <span><%= live_redirect "Show", to: Routes.room_show_path(@socket, :show, room) %></span>
+          <%= if (@current_user.id == room.creator.id) do %>
+            | <span><%= live_patch "Edit", to: Routes.room_index_path(@socket, :edit, room) %></span>
+            | <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: room.id, data: [confirm: "Are you sure?"] %></span>
+          <% end %>
+        </div>
+        <div class="my-2 flex flex-row justify-center">
+          <div class="w-full bg-gray-200 mt-3" style="height: 1px"></div>
+        </div>
+      </div>
+
+    <% end %>
+  </div>
+  <span><%= live_patch "New Room", to: Routes.room_index_path(@socket, :new) %></span>
+</div>
+
