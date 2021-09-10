@@ -18,7 +18,8 @@ defmodule TodoLiveWeb.RoomLive.Show do
         %{
           first_name: current_user.first_name,
           email: current_user.email,
-          user_id: current_user.id
+          user_id: current_user.id,
+          typing: false
         }
       )
     end
@@ -44,8 +45,45 @@ defmodule TodoLiveWeb.RoomLive.Show do
   end
 
   @impl true
-  def handle_event("typing", _params, socket) do
+  def handle_event(
+        "typing",
+        _params,
+        %{assigns: %{room: room, current_user: current_user}} = socket
+      ) do
+    topic = topic(room.id)
+    key = current_user.id
+    payload = %{typing: true}
+
+    metas =
+      Presence.get_by_key(topic, key)[:metas]
+      |> List.first()
+      |> Map.merge(payload)
+
+    Presence.update(self(), topic, key, metas)
+
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event(
+        "stop_typing",
+        %{"value" => body} = _value,
+        %{assigns: %{room: room, current_user: current_user}} = socket
+      ) do
+    changeset = Chats.change_message(%Chats.Message{}, %{body: body})
+
+    topic = topic(room.id)
+    key = current_user.id
+    payload = %{typing: false}
+
+    metas =
+      Presence.get_by_key(topic, key)[:metas]
+      |> List.first()
+      |> Map.merge(payload)
+
+    Presence.update(self(), topic, key, metas)
+
+    {:noreply, assign(socket, changeset: changeset)}
   end
 
   @impl true

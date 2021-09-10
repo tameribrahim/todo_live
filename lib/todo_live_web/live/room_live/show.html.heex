@@ -26,7 +26,7 @@
         phx-change="typing"
         phx-submit="save">
 
-        <%= text_input f, :body, "phx-hook": "chatInput" %>
+        <%= text_input f, :body, "phx-hook": "chatInput", phx_blur: "stop_typing" %>
         <%= error_tag f, :body %>
 
         <div>
@@ -41,6 +41,6 @@
 <h3>Members</h3>
 <%= for user <- @users do %>
   <p>
-    <%= user.first_name %>
+    <%= user.first_name %><%= if user.typing, do: "..." %>
   </p>
 <% end %>
