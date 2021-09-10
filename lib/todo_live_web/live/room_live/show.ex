@@ -1,26 +1,34 @@
 defmodule TodoLiveWeb.RoomLive.Show do
   use TodoLiveWeb, :live_view
+  alias TodoLiveWeb.Presence
 
   alias TodoLive.Chats
+
+  def topic(id), do: "room-#{id}"
 
   @impl true
   def mount(%{"id" => id}, %{"current_user" => current_user} = _session, socket) do
     if connected?(socket) do
       Chats.subscribe(id)
 
-      # Presence.track(
-      #   self(),
-      #   @ room_presence,
-      #   current_user.id,
-      #   %{
-      #     first_name: current_user.first_name,
-      #     email: current_user.email,
-      #     user_id: current_user.id
-      #   }
-      # )
+      Presence.track(
+        self(),
+        topic(id),
+        current_user.id,
+        %{
+          first_name: current_user.first_name,
+          email: current_user.email,
+          user_id: current_user.id
+        }
+      )
     end
 
-    {:ok, assign(socket, :current_user, current_user)}
+    socket =
+      socket
+      |> assign(:current_user, current_user)
+      |> assign(:users, [])
+
+    {:ok, socket}
   end
 
   @impl true
@@ -56,6 +64,18 @@ defmodule TodoLiveWeb.RoomLive.Show do
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}
     end
+  end
+
+  @impl true
+  def handle_info(%{event: "presence_diff"}, socket = %{assigns: %{room: room}}) do
+    users =
+      Presence.list(topic(room.id))
+      |> Enum.map(fn {_user_id, data} ->
+        data[:metas]
+        |> List.first()
+      end)
+
+    {:noreply, assign(socket, users: users)}
   end
 
   @impl true

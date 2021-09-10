@@ -38,3 +38,9 @@
   <span><%= live_redirect "Back", to: Routes.room_index_path(@socket, :index) %></span>
 </div>
 
+<h3>Members</h3>
+<%= for user <- @users do %>
+  <p>
+    <%= user.first_name %>
+  </p>
+<% end %>

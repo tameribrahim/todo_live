@@ -8,7 +8,6 @@ defmodule TodoLiveWeb.LobbyLive.Chat do
       # |> assign_defaults(session)
       |> assign(:current_user, current_user)
 
-    IO.inspect(current_user)
     {:ok, socket}
   end
 end

@@ -14,10 +14,10 @@ defmodule TodoLive.Application do
       TodoLiveWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: TodoLive.PubSub},
-      # Start the Endpoint (http/https)
-      TodoLiveWeb.Endpoint,
       # Add Presence
-      TodoLiveWeb.Presence
+      TodoLiveWeb.Presence,
+      # Start the Endpoint (http/https)
+      TodoLiveWeb.Endpoint
       # Start a worker by calling: TodoLive.Worker.start_link(arg)
       # {TodoLive.Worker, arg}
     ]
