@@ -50,7 +50,8 @@ defmodule TodoLive.MixProject do
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:bamboo, git: "https://github.com/tameribrahim/bamboo", branch: "update-mime-version"}
+      {:bamboo, git: "https://github.com/tameribrahim/bamboo", branch: "update-mime-version"},
+      {:credo, "~> 1.5", only: [:dev, :test], runtime: false}
     ]
   end
 

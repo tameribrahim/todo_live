@@ -70,7 +70,14 @@ defmodule TodoLiveWeb.RoomLive.Show do
         %{"value" => body} = _value,
         %{assigns: %{room: room, current_user: current_user}} = socket
       ) do
-    changeset = Chats.change_message(%Chats.Message{}, %{body: body})
+    IO.puts("#######STOP TYPING########")
+
+    changeset =
+      Chats.change_message(%Chats.Message{}, %{
+        body: body,
+        user_id: current_user.id,
+        room_id: room.id
+      })
 
     topic = topic(room.id)
     key = current_user.id
@@ -88,6 +95,7 @@ defmodule TodoLiveWeb.RoomLive.Show do
 
   @impl true
   def handle_event("save", %{"message" => message_params}, socket) do
+    IO.puts("#######SAVING########")
     %{current_user: current_user, room: room} = socket.assigns
 
     full_params =
@@ -105,7 +113,7 @@ defmodule TodoLiveWeb.RoomLive.Show do
   end
 
   @impl true
-  def handle_info(%{event: "presence_diff"}, socket = %{assigns: %{room: room}}) do
+  def handle_info(%{event: "presence_diff"}, %{assigns: %{room: room}} = socket) do
     users =
       Presence.list(topic(room.id))
       |> Enum.map(fn {_user_id, data} ->
