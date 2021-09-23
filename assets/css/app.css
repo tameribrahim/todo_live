@@ -108,3 +108,5 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+[x-cloak] { display: none !important; }

@@ -1,6 +1,9 @@
 <main class="main">
   <p class="alert alert-info" role="alert"
     phx-click="lv:clear-flash"
+    x-data="{show: true}"
+    x-show="show"
+    x-init="setTimeout(() => show = false, 3000)"
     phx-value-key="info"><%= live_flash(@flash, :info) %></p>
 
   <p class="alert alert-danger" role="alert"
